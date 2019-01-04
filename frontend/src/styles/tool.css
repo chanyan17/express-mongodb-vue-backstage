@@ -1,0 +1,34 @@
+/* text-align */
+.tl {
+    text-align: left !important;
+}
+.tc {
+    text-align: center !important;
+}
+.tr {
+    text-align: right !important;
+}
+
+
+.fl {
+  float: left !important;
+}
+.fr {
+  float: right !important;
+}
+.ofh {
+  overflow: hidden !important;
+}
+
+/* cursor */
+.pointer {
+    cursor: pointer !important;
+}
+
+.ib {
+  display: inline-block !important;
+}
+
+.vam {
+  vertical-align: middle !important;
+}

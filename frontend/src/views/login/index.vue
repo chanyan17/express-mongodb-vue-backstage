@@ -1,0 +1,102 @@
+<template>
+    <div class="login-container">
+      <div class="login-main">
+        <div class="logo">
+          <img src="http://temp.im/142x142" alt="">
+        </div>
+        <el-form ref="form" :model="form" size="large">
+          <el-form-item>
+              <el-input
+                placeholder="请输入账号/手机/邮箱"
+                prefix-icon="el-icon-edit"
+                v-model="form.username">
+              </el-input>
+          </el-form-item>
+          <el-form-item>
+              <el-input
+                placeholder="请输入登录密码"
+                prefix-icon="el-icon-edit"
+                v-model="form.password">
+              </el-input>
+          </el-form-item>
+          <el-form-item >
+              <el-input
+                placeholder="请输入图形验证码"
+                prefix-icon="el-icon-edit"
+                v-model="form.code">
+                <div slot="append" class="ib vam">
+                  <img class="ib vam pointer" src="http://temp.im/60x30" alt="">
+                </div>
+              </el-input>
+          </el-form-item>
+          <el-form-item class="tr">
+            <el-checkbox v-model="form.isRemember">记住登录状态</el-checkbox>
+          </el-form-item>
+          <el-form-item>
+             <el-button type="primary" class="login" @click="login()">登 录</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+</template>
+<script>
+export default {
+  data () {
+    return {
+      form: {
+        username: '',
+        password: '',
+        code: ''
+      }
+    }
+  },
+  methods: {
+    login () {
+      this.$router.push({path: '/home/index'})
+      // this.$router.push({name: 'home', query: {id: 123}, params: {name: '123456'}})
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+.login-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #0079FE;
+}
+.login-main {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto auto;
+  width: 460px;
+  height: 440px;
+  border-radius: 10px;
+  background-color: #FFF;
+
+  .logo {
+    position: absolute;
+    top: -71px;
+    left: 50%;
+    margin-left: -71px;
+    width: 142px;
+    height: 142px;
+    border-radius: 50%;
+    z-index: 2;
+    overflow: hidden;
+  }
+
+  .el-form {
+    box-sizing: border-box;
+    padding: 75px 40px;
+    height: 100%;
+  }
+
+  .login {
+    width: 100%;
+  }
+}
+</style>
