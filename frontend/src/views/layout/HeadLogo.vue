@@ -1,13 +1,28 @@
 <template>
-    <el-container>
-        <div class="logo">
-            <span class="pic">
-                <img src="http://temp.im/40x40" alt="">
-            </span>
-            <span class="name">Backstage</span>
-        </div>
-    </el-container>
+  <el-container :class="isCollapseMenu ? 'el-collapse-container' : ''">
+    <div class="logo">
+      <span class="pic">
+        <img src="@/assets/logo.png" alt="">
+      </span>
+      <span class="name" v-show="!isCollapseMenu">{{ $t('system') }}</span>
+    </div>
+  </el-container>
 </template>
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  data () {
+    return {
+
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'isCollapseMenu'
+    ])
+  }
+}
+</script>
 <style lang="less" scoped>
     .el-container {
         position: absolute;
@@ -24,6 +39,9 @@
             width: 100%;
         }
     }
+    .el-collapse-container {
+      padding-left: 10px;
+    }
 
     .logo {
         .pic {
@@ -34,6 +52,10 @@
             border-radius: 50%;
             background-color: aliceblue;
             overflow: hidden;
+            img {
+              width: 100%;
+              height: 100%;
+            }
         }
         .name {
             display: inline-block;

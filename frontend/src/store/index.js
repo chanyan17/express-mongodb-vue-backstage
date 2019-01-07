@@ -1,8 +1,8 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import vue from 'vue'
+import vuex from 'vuex'
 import getters from '@/store/getters'
 
-Vue.use(Vuex)
+vue.use(vuex)
 
 const requireFilter = require.context(
   // 指令目录
@@ -28,8 +28,9 @@ requireFilter.keys().forEach(fileName => {
 
   modules[filterName] = filterConfig.default || filterConfig
 })
-
-const store = new Vuex.Store({
+console.log(modules)
+console.log(getters)
+const store = new vuex.Store({
   modules: modules,
   getters: getters
 })

@@ -1,8 +1,10 @@
 import { Loading } from 'element-ui'
 
 const base = {
-  store: {
-    loadingInstance: ''
+  state: {
+    loadingInstance: '',
+    isCollapseMenu: false,
+    language: 'cn'
   },
   mutations: {
     SHOW_LOADING (state, options) {
@@ -29,6 +31,14 @@ const base = {
 
     HIDE_LOADING (state) {
       state.loadingInstance && state.loadingInstance.close()
+    },
+
+    TOGGLE_COLLAPSE_MENU (state) {
+      state.isCollapseMenu = !state.isCollapseMenu
+    },
+
+    TOGGLE_LANGUAGE (state) {
+      state.language = state.language === 'en' ? 'cn' : 'en'
     }
   },
   actions: {}

@@ -7,15 +7,17 @@
 
 ### 前期准备
 - [ ] 原型规划
+    * [原型参考](http://www.wulihub.com.cn/go/4Jrn8J/start.html#g=1&p=%E9%A6%96%E9%A1%B5%E6%A1%86%E6%9E%B6&c=1)
 - [ ] 数据表的确定
 - [ ] UI风格确定
+    * icon选择`Ant Design 官方图标库`
 - [ ] 功能点-todoList
 
 ### Mongodb的使用
 
 ### 技术栈相关文档
 
-### [原型参考](http://www.wulihub.com.cn/go/4Jrn8J/start.html#g=1&p=%E9%A6%96%E9%A1%B5%E6%A1%86%E6%9E%B6&c=1)
+### 
 
 ### todoList
 #### 登录页
@@ -35,6 +37,7 @@
 - [ ] 头像、用户名（默认头像分男女）
 - [ ] 退出登录
 - [ ] 目录菜单折叠开关
+- [ ] 语言切换
 
 #### 个人中心
 - [ ] 不可编辑：用户名、手机号、角色注册时间

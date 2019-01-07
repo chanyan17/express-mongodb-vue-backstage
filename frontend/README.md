@@ -58,8 +58,8 @@ npm install axios -S
 npm i --save lodash
 ```
 
-
+### 安装vue-i18n，实现语言切换
+```bash
+npm i vue-i18n
+```
 ## 路由搭建
-
-## 待处理的功能
-- [ ] 登录页的icon

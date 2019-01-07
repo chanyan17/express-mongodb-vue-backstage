@@ -8,22 +8,28 @@
           <el-form-item>
               <el-input
                 placeholder="请输入账号/手机/邮箱"
-                prefix-icon="el-icon-edit"
                 v-model="form.username">
+                <template slot="prepend">
+                  <span class="iconfont icon-user"></span>
+                </template>
               </el-input>
           </el-form-item>
           <el-form-item>
               <el-input
                 placeholder="请输入登录密码"
-                prefix-icon="el-icon-edit"
                 v-model="form.password">
+                <template slot="prepend">
+                  <span class="iconfont icon-pwd"></span>
+                </template>
               </el-input>
           </el-form-item>
           <el-form-item >
               <el-input
                 placeholder="请输入图形验证码"
-                prefix-icon="el-icon-edit"
                 v-model="form.code">
+                <template slot="prepend">
+                  <span class="iconfont icon-code"></span>
+                </template>
                 <div slot="append" class="ib vam">
                   <img class="ib vam pointer" src="http://temp.im/60x30" alt="">
                 </div>
@@ -99,4 +105,10 @@ export default {
     width: 100%;
   }
 }
+</style>
+<style>
+  .el-input-group__append,
+  .el-input-group__prepend {
+    padding: 0 10px;
+  }
 </style>

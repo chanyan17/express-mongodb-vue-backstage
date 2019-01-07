@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="256px">
+    <el-aside :width="isCollapseMenu ? '64px' : '172px'">
       <head-logo></head-logo>
       <side-nav></side-nav>
     </el-aside>
@@ -14,6 +14,7 @@
 import HeadLogo from '@/views/layout/HeadLogo'
 import HeadBar from '@/views/layout/HeadBar'
 import SideNav from '@/views/layout/SideNav'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Layout',
   components: {
@@ -23,6 +24,11 @@ export default {
   },
   data () {
     return {}
+  },
+  computed: {
+    ...mapGetters([
+      'isCollapseMenu'
+    ])
   }
 }
 </script>
