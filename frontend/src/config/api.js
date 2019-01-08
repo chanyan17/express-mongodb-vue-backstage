@@ -1,8 +1,5 @@
-// 切换数据入口开关
-export const isFakeData = !(process.env.NODE_ENV === 'development')
-
 // 请求的路径,若不设置则根据环境来配置(process.env.BASE_API)
-export const baseUrl = 'http://192.168.0.107:3000'
+export const baseUrl = 'http://localhost:3000'
 
 // 超时时间设置
 export const serviceTimeout = 5000

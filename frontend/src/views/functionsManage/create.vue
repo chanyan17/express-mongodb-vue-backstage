@@ -58,6 +58,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary">新建权限</el-button>
+            <el-button type="info">取消并返回</el-button>
           </el-form-item>
         </el-form>
       </div>

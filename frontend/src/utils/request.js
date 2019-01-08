@@ -1,7 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
 import { Message } from 'element-ui'
-import { getToken } from '@/utils/token'
 import {
   baseUrl,
   serviceTimeout,
@@ -30,9 +29,9 @@ service.interceptors.request.use(
       })
     }
 
-    if (getToken()) {
-      config.headers['X-Token'] = getToken()
-    }
+    // if (getToken()) {
+    //   config.headers['X-Token'] = getToken()
+    // }
 
     return config
   },

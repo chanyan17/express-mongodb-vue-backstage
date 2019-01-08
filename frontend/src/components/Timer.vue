@@ -25,7 +25,7 @@ export default {
       this.timeStamp += 1000
     }, 1000)
   },
-  destroy () {
+  destroyed () {
     window.clearInterval(this.timer)
   }
 }

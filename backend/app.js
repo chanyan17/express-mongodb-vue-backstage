@@ -1,26 +1,48 @@
-// 导入express模块
+const createError = require('http-errors')
 const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const logger = require('morgan')
 
-// 启动web服务器
+// cors config
+const cors = require('cors')
+const corsOptions = {
+  origin: ['http://192.168.0.107:8080'],
+  optionsSuccessStatus: 200
+}
+
+const mongoHelper = require('./db/mongo-helper.js')
 const app = express()
 
-app.use('/user', require('./src/route/user'))
-app.use('/functions', require('./src/route/functions'))
-app.use('/role', require('./src/route/role'))
+app.use(cors(corsOptions))
 
-//连接数据库，连接之前先安装并开启数据库服务器
-const mongoose = require('mongoose')
+// view engine setup
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'pug')
 
-mongoose.connect('mongodb://localhost:27017/authRole', err => {
-    if (err) {
-        console.log('mongoose connect fail')
-    } else {
-        console.log('mongoose connect success')
-        const port = process.env.PORT || 3001
-        //监听http请求
-        app.listen(port)
-        console.log('port open at http://localhost:' + port)
-    }
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.use('/v1/user', require('./routes/v1/user'))
+app.use('/v1/role', require('./routes/v1/role'))
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404))
 })
 
-app.get('/', (req, res) => res.send('Hello World!'))
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message
+  res.locals.error = req.app.get('env') === 'development' ? err : {}
+
+  // render the error page
+  res.status(err.status || 500)
+  res.render('error')
+})
+
+module.exports = app

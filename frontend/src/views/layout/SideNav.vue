@@ -1,12 +1,13 @@
 <template>
   <transition name="slide-fade">
-    <el-menu default-active="1-4-1" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapseMenu">
-      <router-link to="/home">
-        <el-menu-item index="1">
-          <svg-icon  icon-class="home"></svg-icon>
-          <span slot="title">主页</span>
+    <el-menu :default-active="$route.path" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapseMenu">
+      <router-link :to="router.link" v-for="(router, index) in routers" v-bind:key="index">
+        <el-menu-item :index="router.link">
+          <svg-icon  :icon-class="router.icon"></svg-icon>
+          <span slot="title">{{ router.text }}</span>
         </el-menu-item>
       </router-link>
+    <!--
       <router-link to="/userManage">
         <el-menu-item index="2">
           <svg-icon  icon-class="user-manage"></svg-icon>
@@ -24,7 +25,7 @@
           <svg-icon  icon-class="function-manage"></svg-icon>
           <span slot="title">权限管理</span>
         </el-menu-item>
-      </router-link>
+      </router-link> -->
     </el-menu>
   </transition>
 </template>
@@ -33,7 +34,24 @@ import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      isCollapse: false
+      isCollapse: false,
+      routers: [{
+        link: '/home/index',
+        icon: 'home',
+        text: '主页'
+      }, {
+        link: '/userManage/index',
+        icon: 'user-manage',
+        text: '用户管理'
+      }, {
+        link: '/roleManage/index',
+        icon: 'role-manage',
+        text: '角色管理'
+      }, {
+        link: '/functionsManage/index',
+        icon: 'function-manage',
+        text: '权限管理'
+      }]
     }
   },
   computed: {
