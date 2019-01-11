@@ -71,17 +71,17 @@ export const routes = [
     ]
   },
   {
-    path: '/functionsManage',
-    redirect: '/functionsManage/index',
+    path: '/authManage',
+    redirect: '/authManage/index',
     component: Layout,
     children: [
       {
-        path: '/functionsManage/index',
-        component: resolve => require(['@/views/functionsManage/index.vue'], resolve)
+        path: '/authManage/index',
+        component: resolve => require(['@/views/authManage/index.vue'], resolve)
       },
       {
-        path: '/functionsManage/create',
-        component: resolve => require(['@/views/functionsManage/create.vue'], resolve)
+        path: '/authManage/create',
+        component: resolve => require(['@/views/authManage/create.vue'], resolve)
       }
     ]
   }

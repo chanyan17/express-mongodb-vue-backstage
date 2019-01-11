@@ -20,7 +20,7 @@
           <span slot="title">角色管理</span>
         </el-menu-item>
       </router-link>
-      <router-link to="/functionsManage">
+      <router-link to="/authManage">
         <el-menu-item index="4">
           <svg-icon  icon-class="function-manage"></svg-icon>
           <span slot="title">权限管理</span>
@@ -48,8 +48,8 @@ export default {
         icon: 'role-manage',
         text: '角色管理'
       }, {
-        link: '/functionsManage/index',
-        icon: 'function-manage',
+        link: '/authManage/index',
+        icon: 'auth-manage',
         text: '权限管理'
       }]
     }

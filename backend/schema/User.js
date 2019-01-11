@@ -8,16 +8,62 @@ const UserSchema = new mongoose.Schema({
   mobile: {type: String},
   // 密码
   password: {type: String, default: '123456'},
-  // 角色
-  roles: {type: Array, default: []}
+  // 邮箱
+  email: {type: String},
+  // 性别
+  sex: {type: String},
+  // 状态
+  status: {type: String, default: 'normal'},
+  // 备注
+  remark: {type: String}
 }, {
-  versionKey: false  //查询数据库时，忽略 _v 的字段返回
+  versionKey: false, //查询数据库时，忽略 _v 的字段返回
+  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 })
 
 UserSchema.statics = {
   // 创建用户
   save (opts) {
     return this.create(opts)
+  },
+  // 搜索列表
+  findAll (pageSize, skipCount) {
+    if (pageSize) {
+      return this.find({}).limit(pageSize).skip(skipCount).sort({ id: -1 })
+    } else {
+      return this.find({}).count()
+    }
+  },
+  // 搜索
+  findByOpts (opts, pageSize, skipCount) {
+    if (opts.name) {
+      opts.name = {'$regex': opts.name, $options: '$i'}
+    }
+    if (pageSize) {
+      return this.find(opts).limit(pageSize).skip(skipCount).sort({ id: -1 })
+    } else {
+      return this.find(opts).count()
+    }
+  },
+  // 详情
+  findById (id) {
+    return this.findOne({
+      _id: id
+    }, {
+      _id: 0
+    })
+  },
+  // 更新用户信息
+  updateById (id, opts) {
+    return this.update({
+      _id: id
+    }, opts)
+  },
+  // 注销账号
+  removeById (id) {
+    return this.removeOne({
+      _id: id
+    })
   }
 }
 
@@ -27,4 +73,4 @@ UserSchema.statics = {
   * 参数二为 Schema
   * 参数三为映射到 MongoDB 的 Collection 名
 **/
-module.exports = mongoose.model('User', UserSchema, 'userInfo')
+module.exports = mongoose.model('User', UserSchema, 'user')

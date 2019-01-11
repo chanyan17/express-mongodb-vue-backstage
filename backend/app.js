@@ -28,6 +28,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/v1/user', require('./routes/v1/user'))
 app.use('/v1/role', require('./routes/v1/role'))
+app.use('/v1/auth', require('./routes/v1/auth'))
+app.use('/v1/init', require('./routes/v1/init'))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

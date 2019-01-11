@@ -7,13 +7,6 @@
           <el-form-item label="权限名称">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
-          <el-form-item label="权限类型">
-            <el-radio-group v-model="form.authType">
-              <el-radio-button label="catalog">目录</el-radio-button>
-              <el-radio-button label="menu">菜单</el-radio-button>
-              <el-radio-button label="button">按钮</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
           <el-form-item label="父层权限名称">
             <el-select v-model="form.parentId" placeholder="请选择">
               <el-option
@@ -23,6 +16,13 @@
                 :value="item.id">
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="权限类型">
+            <el-radio-group v-model="form.authType">
+              <el-radio-button label="catalog">目录</el-radio-button>
+              <el-radio-button label="menu">菜单</el-radio-button>
+              <el-radio-button label="button">按钮</el-radio-button>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="请求地址">
             <el-input v-model="form.location"></el-input>

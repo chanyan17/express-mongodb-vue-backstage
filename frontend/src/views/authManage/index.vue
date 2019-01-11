@@ -68,7 +68,7 @@ export default {
       tableData: [{
         name: '用户管理',
         authType: '目录',
-        location: 'http://localhost:8080/#/functionsManage/index',
+        location: 'http://localhost:8080/#/authManage/index',
         authSign: 'system:jiagou:view',
         isDisplay: '可见',
         displayMode: '当前窗口',
@@ -77,7 +77,7 @@ export default {
       {
         name: '用户管理',
         authType: '目录',
-        location: 'http://localhost:8080/#/functionsManage/index',
+        location: 'http://localhost:8080/#/authManage/index',
         authSign: 'system:jiagou:view',
         isDisplay: '可见',
         displayMode: '当前窗口',
@@ -89,7 +89,7 @@ export default {
   methods: {
     handleCurrentChange () {},
     createFunctions () {
-      this.$router.push({path: '/functionsManage/create'})
+      this.$router.push({path: '/authManage/create'})
     }
   }
 }
