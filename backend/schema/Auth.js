@@ -1,9 +1,6 @@
 // 权限表
 const mongoose = require('mongoose')
 
-// let counter = 1;
-// let CountedId = {type: Number, default: () => counter++}
-
 // 定义权限表结构
 const AuthSchema = new mongoose.Schema({
   name: String, // 权限名称
@@ -41,19 +38,22 @@ AuthSchema.statics = {
     return this.find({
       parentId: 0
     }, {
-      _id: 0,
-      id: 1,
+      _id: 1,
       name: 1
     })
   },
 
   // 搜索全部
-  findAll (pageSize, skipCount) {
+  search (pageSize, skipCount) {
     if (pageSize) {
       return this.find({}).limit(pageSize).skip(skipCount).sort({ id: -1 })
     } else {
       return this.find({}).count()
     }
+  },
+
+  findAll () {
+    return this.find()
   },
 
   // 通过权限名称模糊搜索
@@ -81,7 +81,7 @@ AuthSchema.statics = {
 
   // 更新权限
   updateById (id, opts) {
-    return this.update({
+    return this.updateOne({
       _id: id
     }, opts)
   },

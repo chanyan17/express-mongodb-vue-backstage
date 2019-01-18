@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <div class="main">
-      <div class="title">新建角色</div>
+      <div class="title">编辑角色</div>
       <div class="form">
         <el-form ref="form" :model="form" :rules="formRules" label-width="80px" label-position="left" size="small">
           <el-form-item label="角色标识" prop="key">
@@ -20,9 +20,11 @@
               resize="none">
             </el-input>
           </el-form-item>
+          <el-form-item label="创建人" prop="createdBy">
+            <el-input v-model="form.createdBy"></el-input>
+          </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="createRole()">新建角色</el-button>
-            <el-button type="primary" @click="createAndConfig()">新建并配置权限</el-button>
+            <el-button type="primary" @click="saveEdit()">保存编辑</el-button>
             <el-button type="info" @click="cancelAndBack()">取消并返回</el-button>
           </el-form-item>
         </el-form>
@@ -63,12 +65,9 @@ export default {
     }
 
     return {
-      form: {
-        key: '',
-        name: '',
-        desc: '',
-        createdBy: '-'
-      },
+      form: {},
+      formString: '',
+      roleId: 0,
       formRules: {
         key: [
           {validator: keyValidator, trigger: 'blur'}
@@ -82,42 +81,38 @@ export default {
       }
     }
   },
+  created () {
+    this.roleId = this.$route.params.roleId
+    this.getInitData()
+  },
   methods: {
-    createRoleHandler () {
-      return new Promise((resolve, reject) => {
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            this.$store.dispatch('createRole', this.form).then(() => {
-              resolve(this.form)
-              return this.form
-            }, () => {
-              resolve(false)
-              return false
-            })
-          } else {
-            resolve(false)
-            return false
-          }
-        })
-      })
-    },
-    createRole () {
-      this.createRoleHandler().then(response => {
-        this.$router.push({path: '/roleManage/index'})
-      })
-    },
-    createAndConfig () {
-      this.createRoleHandler().then(response => {
-        if (response) {
-          this.cancelAndBack()
+    getInitData () {
+      this.$store.dispatch('getRoleDetail', {
+        id: this.roleId
+      }).then(data => {
+        this.form = data
+        for (let i in this.form) {
+          this.formString += this.form[i]
         }
       })
     },
-    cancelAndBack () {
-      this.$router.back(-1)
+    saveEdit () {
+      let str = ''
+      for (let i in this.form) {
+        str += this.form[i]
+      }
+
+      if (str === this.formString) {
+        this.cancelAndBack()
+      } else {
+        this.form.id = this.roleId
+        this.$store.dispatch('updateRole', this.form).then(data => {
+          this.cancelAndBack()
+        })
+      }
     },
-    editRole () {
-      this.$router.push({path: '/roleManage/edit'})
+    cancelAndBack () {
+      this.$router.push({path: '/roleManage/index'})
     }
   }
 }

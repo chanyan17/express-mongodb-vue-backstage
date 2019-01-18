@@ -28,8 +28,7 @@ requireFilter.keys().forEach(fileName => {
 
   modules[filterName] = filterConfig.default || filterConfig
 })
-console.log(modules)
-console.log(getters)
+
 const store = new vuex.Store({
   modules: modules,
   getters: getters

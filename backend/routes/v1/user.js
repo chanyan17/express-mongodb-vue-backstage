@@ -116,7 +116,6 @@ router.get('/list', (req, res, next) => {
 })
 
 router.post('/detail', (req, res, next) => {
-  console.log(req.body.id)
   User.findById(req.body.id).then(rs => {
     responseData.msg = '获取用户详情成功'
     responseData.data = rs
@@ -238,6 +237,49 @@ router.post('/resetPwd', (req, res, next) => {
     responseData.msg = '账号不存在'
     responseData.error = error
     res.json(responseData)
+  })
+})
+
+router.post('/update', (req, res, next) => {
+  var condition = {
+      email: req.body.email,
+      sex: req.body.sex,
+      remark: req.body.remark
+    },
+    _condition = {}
+  for(let i in condition) {
+    if (condition[i]) {
+      _condition[i] = condition[i]
+    }
+  }
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少用户id参数'
+    res.json(responseData)
+  }
+  UserRole.removeByUserId(req.body.id).then(rs => {
+    Promise.all([
+      User.updateById(req.body.id, _condition),
+      UserRole.insert(req.body.id, req.body.roleIds)
+    ]).then(rs => {
+      User.findById(req.body.id).then(rs => {
+        responseData.msg = '编辑保存成功'
+        responseData.data = rs
+        responseData.data = {
+          email: rs['email'],
+          sex: rs['sex'],
+          remark: rs['remark'],
+          createdAt: (new Date(rs['createdAt'])).getTime(),
+          updatedAt: (new Date(rs['updatedAt'])).getTime()
+        }
+        res.json(responseData)
+      })
+    }).catch(error => {
+      responseData.ok = 1
+      responseData.msg = '编辑保存失败'
+      responseData.error = error
+      res.json(responseData)
+    })
   })
 })
 module.exports = router;

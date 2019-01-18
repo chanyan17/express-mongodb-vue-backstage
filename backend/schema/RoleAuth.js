@@ -36,7 +36,7 @@ RoleAuthSchema.statics = {
   },
   // 通过角色id获取角色权限信息
   findById (rid) {
-    return this,findById({
+    return this.find({
       roleId: rid
     })
   },

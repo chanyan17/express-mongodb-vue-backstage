@@ -52,6 +52,11 @@ export const routes = [
       {
         path: '/userManage/create',
         component: resolve => require(['@/views/userManage/create.vue'], resolve)
+      },
+      {
+        path: '/userManage/edit',
+        name: 'userEdit',
+        component: resolve => require(['@/views/userManage/edit.vue'], resolve)
       }
     ]
   },
@@ -67,6 +72,14 @@ export const routes = [
       {
         path: '/roleManage/create',
         component: resolve => require(['@/views/roleManage/create.vue'], resolve)
+      },
+      {
+        path: '/roleManage/edit/:roleId',
+        component: resolve => require(['@/views/roleManage/edit.vue'], resolve)
+      },
+      {
+        path: '/roleManage/authConfig/:roleId',
+        component: resolve => require(['@/views/roleManage/authConfig.vue'], resolve)
       }
     ]
   },
@@ -82,6 +95,14 @@ export const routes = [
       {
         path: '/authManage/create',
         component: resolve => require(['@/views/authManage/create.vue'], resolve)
+      },
+      {
+        path: '/authManage/edit/:authId',
+        component: resolve => require(['@/views/authManage/edit.vue'], resolve)
+      },
+      {
+        path: '/authManage/detail/:authId',
+        component: resolve => require(['@/views/authManage/detail.vue'], resolve)
       }
     ]
   }

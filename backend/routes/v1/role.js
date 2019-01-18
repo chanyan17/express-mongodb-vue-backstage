@@ -18,6 +18,7 @@ router.use((req, res, next) => {
 // 新建角色
 router.post('/create', (req, res, next) => {
   Role.findByKeyword(req.body.key).then(rs => {
+    console.log(rs)
     if (!rs) {
       Role.save({
         key: req.body.key,
@@ -94,7 +95,8 @@ router.get('/list', (req, res, next) => {
         key: obj['key'],
         name: obj['name'],
         desc: obj['desc'],
-        createdBy: obj['createdBy']
+        createdBy: obj['createdBy'],
+        createdAt: (new Date(obj['createdAt'])).getTime(),
       })
     }
 
@@ -109,6 +111,27 @@ router.get('/list', (req, res, next) => {
     responseData.error = error
     res.json(responseData)
   })
+})
+
+// 获取角色权限
+router.get('/roleAuth', (req, res, next) => {
+  if (req.query.roleId) {
+    RoleAuth.findById(req.query.roleId).then(rs => {
+      responseData.ok = 0
+      responseData.msg = '获取成功'
+      responseData.data = rs
+      res.json(responseData)
+    }).catch(error => {
+      responseData.ok = 1
+      responseData.msg = '获取失败'
+      responseData.error = error
+      res.json(responseData)
+    })
+  } else {
+      responseData.ok = 1
+      responseData.msg = '缺少角色id'
+      res.json(responseData)
+  }
 })
 
 // 获取详情
@@ -128,6 +151,44 @@ router.post('/detail', (req, res, next) => {
   }).catch(error => {
     responseData.ok = 1
     responseData.msg = '获取角色详情失败'
+    responseData.error = error
+    res.json(responseData)
+  })
+})
+
+// 保存编辑
+router.post('/update', (req, res, next) => {
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少参数id'
+    res.json(responseData)
+  }
+  var condition = {
+      key: req.body.key,
+      name: req.body.name,
+      desc: req.body.desc,
+      createdBy: req.body.createdBy
+    },
+    _condition = {}
+
+  for(let i in condition) {
+    if (condition[i]) {
+      _condition[i] = condition[i]
+    }
+  }
+
+  Role.updateById(
+    req.body.id,
+    _condition
+  ).then(rs => {
+    Role.findById(req.body.id).then(rs => {
+    console.log(rs)
+    responseData.msg = '编辑保存成功'
+    res.json(responseData)
+  })
+  }).catch(error => {
+    responseData.ok = 1
+    responseData.msg = '编辑保存失败'
     responseData.error = error
     res.json(responseData)
   })

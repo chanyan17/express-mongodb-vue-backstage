@@ -18,8 +18,17 @@ router.use((req, res, next) => {
 // 获取顶层父级权限
 router.get('/parentAuth', (req, res, next) => {
   Auth.findParentAuth().then(rs => {
+    let array = []
+
+    for(let i=0; i<rs.length; i++) {
+      let obj = rs[i]
+      array.push({
+        id: obj['_id'],
+        name: obj['name']
+      })
+    }
     responseData.msg = '获取父层权限成功'
-    responseData.data = rs
+    responseData.data = array
     res.json(responseData)
   }).catch(error => {
     responseData.ok = 1
@@ -31,8 +40,13 @@ router.get('/parentAuth', (req, res, next) => {
 
 // 新建权限
 router.post('/create', (req, res, next) => {
+  if (!req.body.name.length) {
+    responseData.ok = 1
+    responseData.msg = '缺少权限名称'
+    res.json(responseData)
+  }
   Auth.findByNameAndParentId(req.body.name, req.body.parentId).then(rs => {
-    if (!rs) {
+    if (!rs.length) {
       Auth.save({
         name: req.body.name,
         parentId: req.body.parentId,
@@ -76,8 +90,8 @@ router.get('/list', (req, res, next) => {
     ])
   } else {
     action = Promise.all([
-      Auth.findAll(pageSize, skipCount).limit(pageSize).skip(skipCount),
-      Auth.findAll()
+      Auth.search(pageSize, skipCount).limit(pageSize).skip(skipCount),
+      Auth.search()
     ])
   }
   action.then(rs => {
@@ -102,6 +116,34 @@ router.get('/list', (req, res, next) => {
       rows: array,
       totalCount: rs[1]
     }
+    res.json(responseData)
+  }).catch(error => {
+    responseData.ok = 1
+    responseData.msg = '搜索失败'
+    responseData.error = error
+    res.json(responseData)
+  })
+})
+
+// 查询全部
+router.get('/all', (req, res, next) => {
+  Auth.findAll().then(rs => {
+    responseData.msg = '搜索成功'
+    let array = []
+    for(let i=0; i<rs.length; i++) {
+      let obj = rs[i]
+      array.push({
+        id: obj['_id'],
+        name: obj['name'],
+        parentId: obj['parentId'],
+        authType: obj['authType'],
+        location: obj['location'],
+        authSign: obj['authSign'],
+        isDisplay: obj['isDisplay'],
+        remark: obj['remark']
+      })
+    }
+    responseData.data = array
     res.json(responseData)
   }).catch(error => {
     responseData.ok = 1
@@ -138,6 +180,11 @@ router.post('/detail', (req, res, next) => {
 
 // 更新权限
 router.post('/update', (req, res, next) => {
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少参数id'
+    res.json(responseData)
+  }
   var condition = {
       name: req.body.name,
       parentId: req.body.parentId,
@@ -155,25 +202,15 @@ router.post('/update', (req, res, next) => {
       _condition[i] = condition[i]
     }
   }
+  console.log(_condition)
 
   Auth.updateById(
     req.body.id,
     _condition
   ).then(rs => {
     Auth.findById(req.body.id).then(rs => {
+    console.log(rs)
     responseData.msg = '编辑保存成功'
-    responseData.data = {
-      parentId: rs['parentId'],
-      name: rs['name'],
-      authType: rs['authType'],
-      location: rs['location'],
-      authSign: rs['authSign'],
-      displayMode: rs['displayMode'],
-      isDisplay: rs['isDisplay'],
-      remark: rs['remark'],
-      createdAt: (new Date(rs['createdAt'])).getTime(),
-      updatedAt: (new Date(rs['updatedAt'])).getTime()
-    }
     res.json(responseData)
   })
   }).catch(error => {
@@ -198,9 +235,9 @@ router.post('/delete', (req, res, next) => {
       res.json(responseData)
     } else {
       RoleAuth.removeByAuthId(req.body.id).then(rs => {
-          Auth.removeById(req.body.id).then(rs => {
-            responseData.msg = '删除成功'
-            res.json(responseData)
+        Auth.removeById(req.body.id).then(rs => {
+          responseData.msg = '删除成功'
+          res.json(responseData)
         })
       }).catch(error => {
         responseData.ok = 1

@@ -55,14 +55,14 @@ UserSchema.statics = {
   },
   // 更新用户信息
   updateById (id, opts) {
-    return this.update({
+    return this.updateOne({
       _id: id
     }, opts)
   },
   // 注销账号
   removeById (id) {
     return this.removeOne({
-      _id: id
+      userId: id
     })
   }
 }

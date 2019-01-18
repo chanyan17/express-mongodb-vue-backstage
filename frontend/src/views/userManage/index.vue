@@ -71,7 +71,7 @@
           label="操作"
           width="220">
           <template slot-scope="scope">
-            <el-button @click="editUser(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="editUser(scope.row.id)" type="text" size="small">编辑</el-button>
             <el-button type="text" size="small" @click="prohibiteUser()">禁用</el-button>
             <el-button type="text" size="small" @click="unusableUser()">停用</el-button>
             <!-- <el-button type="text" size="small" @click="normalUser()">恢复正常</el-button> -->
@@ -140,9 +140,16 @@ export default {
   },
   methods: {
     createUser () {
-      this.$router.push({path: '/userManage/create'})
+      this.$router.push({
+        path: '/userManage/create'
+      })
     },
-    editUser () {},
+    editUser (userId) {
+      this.$router.push({
+        path: '/userManage/edit/:userId',
+        params: {userId: userId}
+      })
+    },
     prohibiteUser () {
       this.$confirm('此操作将禁用该用户, 确定继续?', '提示', {
         confirmButtonText: '确定',

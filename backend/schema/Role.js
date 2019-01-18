@@ -47,7 +47,7 @@ RoleSchema.statics = {
           {key: {$regex : reg}},
           {name: {$regex : reg}}
         ]
-      }).count()
+      }).countDocuments()
     }
   },
   // 通过id更新角色

@@ -1,15 +1,57 @@
-import { createRole } from '@/api/role'
+import { createRole, getRoleList, deleteRole, getRoleDetail, updateRole } from '@/api/role'
 const role = {
   state: {
-
+    roleList: [],
+    roleTotalCount: 0
   },
   mutations: {
-
+    SET_ROLE_LIST (state, result) {
+      console.log(result)
+      state.roleList = result.rows
+      state.roleTotalCount = result.totalCount
+    }
   },
   actions: {
     createRole ({commit}, params) {
       return new Promise((resolve, reject) => {
         createRole(params).then((response) => {
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getRoleList ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        getRoleList(params).then((response) => {
+          commit('SET_ROLE_LIST', response)
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    deleteRole ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        deleteRole(params).then((response) => {
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getRoleDetail ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        getRoleDetail(params).then((response) => {
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    updateRole ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        updateRole(params).then((response) => {
           resolve(response)
         }).catch(error => {
           reject(error)

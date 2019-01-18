@@ -1,14 +1,14 @@
 <template>
   <div class="main-container">
     <div class="main">
-      <div class="title">新建权限</div>
+      <div class="title">编辑权限</div>
       <div class="form">
         <el-form ref="form" :model="form" label-width="120px" label-position="left" size="small">
           <el-form-item label="权限名称">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.name" :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="父层权限名称">
-            <el-select v-model="form.parentId" placeholder="请选择">
+            <el-select v-model="form.parentId" placeholder="请选择" :disabled="true">
               <el-option
                 v-for="item in parentAuths"
                 :key="item.id"
@@ -55,7 +55,7 @@
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="createAuth()">新建权限</el-button>
+            <el-button type="primary" @click="saveEdit()">保存编辑</el-button>
             <el-button type="info" @click="cancelAndBack()">取消并返回</el-button>
           </el-form-item>
         </el-form>
@@ -68,19 +68,14 @@ import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      form: {
-        name: '',
-        authType: 'menu',
-        parentId: '',
-        location: '',
-        authSign: '',
-        displayMode: '',
-        isDisplay: true
-      }
+      form: {}
     }
   },
   created () {
-    // this.getInitData()
+    this.getInitData()
+    this.authId = this.$route.params.authId
+    console.log(this.authId)
+    this.getDetail()
   },
   computed: {
     ...mapGetters([
@@ -90,12 +85,24 @@ export default {
     ])
   },
   methods: {
-    // getInitData () {
-    //   this.$store.dispatch('getInitData')
-    //   this.$store.dispatch('getParentAuth')
-    // },
-    createAuth () {
-      this.$store.dispatch('createAuth', this.form).then(rs => {
+    getDetail () {
+      this.$store.dispatch('getDetail', {
+        id: this.authId
+      }).then((data) => {
+        this.form = data
+      })
+    },
+    getInitData () {
+      if (!this.authTypes.length) {
+        this.$store.dispatch('getInitData')
+      }
+      if (!this.parentAuths.length) {
+        this.$store.dispatch('getParentAuth')
+      }
+    },
+    saveEdit () {
+      this.form.id = this.authId
+      this.$store.dispatch('saveEditAuth', this.form).then(rs => {
         this.$router.push({path: '/authManage/index'})
       })
     },
