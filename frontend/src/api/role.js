@@ -42,7 +42,15 @@ export function updateRole (params) {
 
 export function getRoleAuth (params) {
   return request({
-    url: '/v1/role/update',
+    url: '/v1/role/roleAuth',
+    method: 'get',
+    params: params
+  })
+}
+
+export function configAuth (params) {
+  return request({
+    url: '/v1/role/configAuth',
     method: 'post',
     data: params
   })

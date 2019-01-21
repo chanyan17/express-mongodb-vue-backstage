@@ -4,17 +4,16 @@
       <div class="title">权限配置</div>
       <div class="form">
         <el-form label-width="0px" label-position="left" size="small">
-          <el-checkbox class="check-all" :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
           <div class="level" v-for="parentAuth in parentAuths" v-bind:key="parentAuth.id">
-            <el-checkbox v-model="parentAuth.is_checked" :label="parentAuth.name" @change="handleCheckedCitiesChange">{{parentAuth.name}}</el-checkbox>
+            <el-checkbox v-model="parentAuth.isChecked">{{parentAuth.name}}</el-checkbox>
             <div class="level-group" v-if="parentAuth.child.length">
-              <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-                <el-checkbox v-for="item in parentAuth.child" :label="item.name" :key="item.id">{{item.name}}</el-checkbox>
-              </el-checkbox-group>
+                <span v-for="item in parentAuth.child" v-bind:key="item.id">
+                  <el-checkbox v-model="item.isChecked">{{item.name}}{{item.isChecked}}</el-checkbox>
+                </span>
             </div>
           </div>
           <div class="action">
-            <el-button type="primary" @click="createAndConfig()">保存配置</el-button>
+            <el-button type="primary" @click="saveEditConfig()">保存配置</el-button>
             <el-button type="info" @click="cancelAndBack()">取消并返回</el-button>
           </div>
         </el-form>
@@ -28,12 +27,15 @@ export default {
     return {
       checkAll: false,
       parentAuths: [],
-      checkedCities: [],
-      isIndeterminate: true
+      checkedAuths: [],
+      checked: true
     }
   },
   created () {
-    this.getAllAuth()
+    this.roleId = this.$route.params.roleId
+    this.getRoleAuth().then(() => {
+      this.getAllAuth()
+    })
   },
   methods: {
     getAllAuth () {
@@ -41,6 +43,12 @@ export default {
         if (data.length) {
           let parentAuths = []
           for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < this.checkedAuths.length; j++) {
+              if (this.checkedAuths[j] === data[i].id) {
+                data[i].isChecked = true
+              }
+            }
+
             if (data[i].parentId === '0') {
               parentAuths.push(data[i])
             }
@@ -59,16 +67,49 @@ export default {
       })
     },
     getRoleAuth () {
-      // this.$store.dispatch('')
+      return this.$store.dispatch('getRoleAuth', {
+        roleId: this.roleId
+      }).then(rs => {
+        for (let i = 0; i < rs.length; i++) {
+          if (rs[i].roleId === this.roleId) {
+            this.checkedAuths.push(rs[i].authId)
+          }
+        }
+      })
     },
-    handleCheckAllChange (val) {
-      // this.checkedCities = val ? cityOptions : []
-      this.isIndeterminate = false
-    },
-    handleCheckedCitiesChange (value) {
-      let checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    saveEditConfig () {
+      this.$confirm('将进行更改权限配置, 确定继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let array = []
+        for (let i = 0; i < this.parentAuths.length; i++) {
+          if (this.parentAuths[i].isChecked) {
+            array.push(this.parentAuths[i].id)
+          }
+          for (let j = 0; j < this.parentAuths[i].child.length; j++) {
+            if (this.parentAuths[i].child[j].isChecked) {
+              array.push(this.parentAuths[i].child[j].id)
+            }
+          }
+        }
+        this.$store.dispatch('configAuth', {
+          id: this.roleId,
+          authIds: array
+        }).then(data => {
+          this.$message({
+            type: 'success',
+            message: '更改成功!',
+            onClose: this.cancelAndBack
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消更改'
+        })
+      })
     },
     cancelAndBack () {
       this.$router.push({path: '/roleManage/index'})

@@ -1,4 +1,4 @@
-import { createRole, getRoleList, deleteRole, getRoleDetail, updateRole } from '@/api/role'
+import { createRole, getRoleList, deleteRole, getRoleDetail, updateRole, getRoleAuth, configAuth } from '@/api/role'
 const role = {
   state: {
     roleList: [],
@@ -52,6 +52,24 @@ const role = {
     updateRole ({commit}, params) {
       return new Promise((resolve, reject) => {
         updateRole(params).then((response) => {
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getRoleAuth ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        getRoleAuth(params).then((response) => {
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    configAuth ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        configAuth(params).then((response) => {
           resolve(response)
         }).catch(error => {
           reject(error)

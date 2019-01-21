@@ -43,21 +43,23 @@ router.post('/create', (req, res, next) => {
 
 // 配置权限
 router.post('/configAuth', (req, res, next) => {
-  RoleAuth.insert(req.body.id, req.body.authIds).then(rs => {
-    responseData.msg = '配置权限成功'
-    responseData.data = rs
-    res.json(responseData)
-  }).catch(error => {
-    if (error === '角色权限关系未选择') {
-      responseData.ok = 1
-      responseData.msg = '角色没有选择对应的权限，配置失败'
+  RoleAuth.removeByRoleId(req.body.id).then(rs => {
+    RoleAuth.insert(req.body.id, req.body.authIds).then(rs => {
+      responseData.msg = '配置权限成功'
+      responseData.data = rs
       res.json(responseData)
-    } else {
-      responseData.ok = 1
-      responseData.msg = '权限配置失败'
-      responseData.error = error
-      res.json(responseData)
-    }
+    }).catch(error => {
+      if (error === '角色权限关系未选择') {
+        responseData.ok = 1
+        responseData.msg = '角色没有选择对应的权限，配置失败'
+        res.json(responseData)
+      } else {
+        responseData.ok = 1
+        responseData.msg = '权限配置失败'
+        responseData.error = error
+        res.json(responseData)
+      }
+    })
   })
 })
 
@@ -119,7 +121,18 @@ router.get('/roleAuth', (req, res, next) => {
     RoleAuth.findById(req.query.roleId).then(rs => {
       responseData.ok = 0
       responseData.msg = '获取成功'
-      responseData.data = rs
+      let array = []
+      for(let i=0; i<rs.length; i++) {
+        let obj = rs[i]
+        array.push({
+          id: obj['_id'],
+          authId: obj['authId'],
+          roleId: obj['roleId'],
+          createdAt: (new Date(obj['createdAt'])).getTime(),
+          updatedAt: (new Date(obj['updatedAt'])).getTime()
+        })
+      }
+      responseData.data = array
       res.json(responseData)
     }).catch(error => {
       responseData.ok = 1
@@ -128,9 +141,9 @@ router.get('/roleAuth', (req, res, next) => {
       res.json(responseData)
     })
   } else {
-      responseData.ok = 1
-      responseData.msg = '缺少角色id'
-      res.json(responseData)
+    responseData.ok = 1
+    responseData.msg = '缺少角色id'
+    res.json(responseData)
   }
 })
 
