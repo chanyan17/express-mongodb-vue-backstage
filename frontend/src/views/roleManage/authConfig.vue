@@ -60,7 +60,7 @@ export default {
     },
     getRoleAuth () {
       // this.$store.dispatch('')
-    }
+    },
     handleCheckAllChange (val) {
       // this.checkedCities = val ? cityOptions : []
       this.isIndeterminate = false
