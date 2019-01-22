@@ -20,7 +20,7 @@ RoleSchema.statics = {
     if (pageSize) {
       return this.find({}).limit(pageSize).skip(skipCount).sort({ id: -1 })
     } else {
-      return this.find({}).count()
+      return this.find({}).countDocuments()
     }
   },
   // 通过_id搜索角色详情

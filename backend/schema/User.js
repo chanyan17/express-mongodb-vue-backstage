@@ -31,7 +31,7 @@ UserSchema.statics = {
     if (pageSize) {
       return this.find({}).limit(pageSize).skip(skipCount).sort({ id: -1 })
     } else {
-      return this.find({}).count()
+      return this.find({}).countDocuments()
     }
   },
   // 搜索
@@ -42,7 +42,7 @@ UserSchema.statics = {
     if (pageSize) {
       return this.find(opts).limit(pageSize).skip(skipCount).sort({ id: -1 })
     } else {
-      return this.find(opts).count()
+      return this.find(opts).countDocuments()
     }
   },
   // 详情

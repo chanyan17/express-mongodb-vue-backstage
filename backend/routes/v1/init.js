@@ -46,6 +46,20 @@ router.get('/data', (req, res, next) => {
           id: 'browserWindow',
           name: '弹出浏览器窗口'
         }
+      ],
+      status: [
+        {
+          id: 'normal',
+          name: '正常'
+        },
+        {
+          id: 'unusable',
+          name: '停用'
+        },
+        {
+          id: 'prohibite',
+          name: '禁用'
+        }
       ]
     }
   }

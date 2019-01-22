@@ -48,7 +48,7 @@ AuthSchema.statics = {
     if (pageSize) {
       return this.find({}).limit(pageSize).skip(skipCount).sort({ id: -1 })
     } else {
-      return this.find({}).count()
+      return this.find({}).countDocuments()
     }
   },
 
@@ -65,7 +65,7 @@ AuthSchema.statics = {
     } else {
       return this.find({
       name: {'$regex': name, $options: '$i'}
-    }).count()
+    }).countDocuments()
     }
   },
 

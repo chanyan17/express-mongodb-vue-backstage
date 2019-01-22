@@ -9,24 +9,13 @@
         </el-input>
       </div>
       <div class="item-input">
-        <span class="label">状态</span>
-        <el-select v-model="status" placeholder="请选择">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-      <div class="item-input">
-        <el-button type="primary" icon="el-icon-search" :loading="false">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" :loading="false" @click="search()">搜索</el-button>
       </div>
       <el-button class="fr" type="primary" icon="el-icon-plus" @click="createUser()">新建用户</el-button>
     </div>
     <div class="result-list">
       <el-table
-        :data="tableData"
+        :data="userList"
         stripe
         style="width: 100%"
         size="small">
@@ -34,7 +23,7 @@
           label="头像"
           width="120">
           <template slot-scope="scope">
-            <img :src="scope.row.portrait" width="30" height="30" class="portrait"/>
+            <img :src="scope.row.portrait || defaultPortrait[scope.row.sex]" width="30" height="30" class="portrait"/>
           </template>
         </el-table-column>
         <el-table-column
@@ -48,11 +37,10 @@
           width="180">
         </el-table-column>
         <el-table-column
-          prop="rolename"
-          label="角色"
-          width="250">
+          label="状态"
+          width="150">
           <template slot-scope="scope">
-            <el-tag size="medium" class="role" v-for="(item, index) in scope.row.rolename" v-bind:key="index">{{ item }}</el-tag>
+              <el-tag :type="typeMap[scope.row.status]" size="medium">{{ statusMap[scope.row.status] }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -60,22 +48,15 @@
           label="备注">
         </el-table-column>
         <el-table-column
-          label="状态"
-          width="150">
-          <template slot-scope="scope">
-              <el-tag type="success" size="medium">正常</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
           fixed="right"
           label="操作"
           width="220">
           <template slot-scope="scope">
-            <el-button @click="editUser(scope.row.id)" type="text" size="small">编辑</el-button>
-            <el-button type="text" size="small" @click="prohibiteUser()">禁用</el-button>
-            <el-button type="text" size="small" @click="unusableUser()">停用</el-button>
-            <!-- <el-button type="text" size="small" @click="normalUser()">恢复正常</el-button> -->
-            <el-button type="text" size="small" @click="resetPwd()">重置密码</el-button>
+            <el-button v-if="scope.row.status == 'normal'" @click="editUser(scope.row.id)" type="text" size="small">编辑</el-button>
+            <el-button v-if="scope.row.status != 'prohibite'" type="text" size="small" @click="prohibiteUser(scope.row.id)">禁用</el-button>
+            <el-button v-if="scope.row.status == 'normal'" type="text" size="small" @click="unusableUser(scope.row.id)">停用</el-button>
+            <el-button v-if="scope.row.status != 'normal'" type="text" size="small" @click="normalUser(scope.row.id)">恢复正常</el-button>
+            <el-button v-if="scope.row.status == 'normal'" type="text" size="small" @click="resetPwd(scope.row.id)">重置密码</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -91,54 +72,56 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
+      defaultPortrait: {
+        male: require('@/assets/male.png'),
+        female: require('@/assets/female.png')
+      },
       username: '',
-      status: '',
-      options: [
-        {
-          value: 'normal',
-          label: '正常'
-        },
-        {
-          value: 'unusable',
-          label: '停用'
-        },
-        {
-          value: 'prohibite',
-          label: '禁用'
-        }
-      ],
-      tableData: [{
-        portrait: 'http://temp.im/30x30',
-        username: '陈一一',
-        rolename: ['校领导', '老师'],
-        mobile: '13560123456',
-        remark: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        portrait: 'http://temp.im/30x30',
-        username: '陈一一',
-        mobile: '13560123456',
-        rolename: ['校领导', '老师'],
-        remark: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        portrait: 'http://temp.im/30x30',
-        username: '陈一一',
-        mobile: '13560123456',
-        rolename: ['校领导', '老师'],
-        remark: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        portrait: 'http://temp.im/30x30',
-        username: '陈一一',
-        rolename: ['校领导', '老师'],
-        mobile: '13560123456',
-        remark: '上海市普陀区金沙江路 1516 弄'
-      }],
-      currentPage: 1
+      pageSize: 10,
+      currentPage: 1,
+      roleMap: {},
+      typeMap: {
+        normal: 'success',
+        unusable: 'info',
+        prohibite: 'danger'
+      }
     }
   },
+  created () {
+    this.getRoleList().then(() => {
+      this.roleList.map(item => {
+        this.roleMap[item.id] = item.name
+      })
+    })
+    this.getUserList()
+  },
+  computed: {
+    ...mapGetters([
+      'roleList',
+      'userList',
+      'userTotalCount',
+      'statusMap'
+    ])
+  },
   methods: {
+    getRoleList () {
+      return this.$store.dispatch('getRoleList', {})
+    },
+    getUserList () {
+      this.$store.dispatch('getUserList', {
+        perPage: this.pageSize,
+        page: this.currentPage,
+        keyword: this.username
+      })
+    },
+    search () {
+      this.currentPage = 1
+      this.getUserList()
+    },
     createUser () {
       this.$router.push({
         path: '/userManage/create'
@@ -146,36 +129,46 @@ export default {
     },
     editUser (userId) {
       this.$router.push({
-        path: '/userManage/edit/:userId',
+        path: '/userManage/edit/' + userId,
         params: {userId: userId}
       })
     },
-    prohibiteUser () {
+    prohibiteUser (userId) {
       this.$confirm('此操作将禁用该用户, 确定继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '禁用成功!'
+        this.$store.dispatch('prohibiteUser', {
+          id: userId
+        }).then(() => {
+          this.search()
+          this.$message({
+            type: 'success',
+            message: '禁用成功!'
+          })
         })
-      }).catch(() => {
+      }).catch((error) => {
         this.$message({
           type: 'info',
-          message: '已取消禁用'
+          message: '禁用失败' + error
         })
       })
     },
-    unusableUser () {
+    unusableUser (userId) {
       this.$confirm('此操作将停用该用户, 确定继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '停用成功!'
+        this.$store.dispatch('unusableUser', {
+          id: userId
+        }).then(() => {
+          this.search()
+          this.$message({
+            type: 'success',
+            message: '停用成功!'
+          })
         })
       }).catch(() => {
         this.$message({
@@ -184,15 +177,20 @@ export default {
         })
       })
     },
-    normalUser () {
+    normalUser (userId) {
       this.$confirm('此操作将恢复该用户正常, 确定继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '恢复正常!'
+        this.$store.dispatch('normalUser', {
+          id: userId
+        }).then(() => {
+          this.search()
+          this.$message({
+            type: 'success',
+            message: '恢复正常!'
+          })
         })
       }).catch(() => {
         this.$message({
@@ -201,15 +199,20 @@ export default {
         })
       })
     },
-    resetPwd () {
+    resetPwd (userId) {
       this.$confirm('此操作将重置密码为123456, 确定继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '重置成功!'
+        this.$store.dispatch('resetPwd', {
+          id: userId
+        }).then(() => {
+          this.search()
+          this.$message({
+            type: 'success',
+            message: '重置成功!'
+          })
         })
       }).catch(() => {
         this.$message({

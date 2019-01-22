@@ -6,7 +6,6 @@ const role = {
   },
   mutations: {
     SET_ROLE_LIST (state, result) {
-      console.log(result)
       state.roleList = result.rows
       state.roleTotalCount = result.totalCount
     }

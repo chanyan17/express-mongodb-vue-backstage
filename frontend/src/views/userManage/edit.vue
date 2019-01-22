@@ -3,14 +3,14 @@
     <div class="main">
       <div class="title">编辑用户</div>
       <div class="form">
-        <el-form ref="form" :model="form" label-width="100px" size="small">
+        <el-form ref="form" :model="form" :rules="formRules" label-width="100px" size="small">
           <el-form-item label="用户名">
-              <el-input v-model="form.name" :disabled="true"></el-input>
+              <el-input v-model="form.username" :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="手机号">
               <el-input v-model="form.mobile" :disabled="true"></el-input>
           </el-form-item>
-          <el-form-item label="电子邮箱">
+          <el-form-item label="电子邮箱" prop="email">
               <el-input v-model="form.email"></el-input>
           </el-form-item>
           <el-form-item label="性别">
@@ -19,21 +19,19 @@
               <el-radio-button label="female">女</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="角色">
-            <el-checkbox-group v-model="form.roles" :min="1">
-              <el-checkbox v-for="role in roles" :label="role" :key="role">{{role}}</el-checkbox>
+          <el-form-item label="角色" prop="roleIds">
+            <el-checkbox-group v-model="form.roleIds">
+              <el-checkbox v-for="(role, idx) in roleList" v-bind:key="idx" :label="role.id" name="roleIds">{{role.name}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="状态">
-              <el-tag type="success" size="medium">正常</el-tag>
-              <el-tag type="info" size="medium">停用</el-tag>
-              <el-tag type="danger" size="medium">禁用</el-tag>
+              <el-tag :type="typeMap[form.status]" size="medium">{{ statusMap[form.status] }}</el-tag>
           </el-form-item>
           <el-form-item label="注册时间">
-            <el-input v-model="form.createdAt" :disabled="true"></el-input>
+            <el-input v-model="createdAt" :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="上次更新时间">
-            <el-input v-model="form.updatedAt" :disabled="true"></el-input>
+            <el-input v-model="updatedAt" :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="备注">
             <el-input
@@ -46,8 +44,8 @@
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary">保存编辑</el-button>
-            <el-button type="info">取消并返回</el-button>
+            <el-button type="primary" @click="saveEdit()">保存编辑</el-button>
+            <el-button type="info" @click="cancelAndBack()">取消并返回</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -55,19 +53,99 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex'
+import dateFormat from '@/filters/dateFormat'
 export default {
   data () {
+    const emailValidator = (rule, value, callback) => {
+      var exp = /^[a-zA-Z0-9]+([._\\-]*[a-zA-Z0-9])*@([a-zA-Z0-9]+[-a-zA-Z0-9]*[a-zA-Z0-9]+.){1,63}[a-zA-Z0-9]+$/
+      if (!value) {
+        callback(new Error('请输入邮箱'))
+      } else if (!exp.test(value)) {
+        callback(new Error('请输入正确的邮箱'))
+      } else {
+        callback()
+      }
+    }
     return {
       form: {
-        name: 'Admin',
-        mobile: '13560123456',
-        email: '10@qq.com',
-        sex: 'male',
-        createdAt: '2019-01-03',
-        updatedAt: '2019-01-03',
+        username: '',
+        mobile: '',
+        email: '',
+        sex: '',
+        createdAt: '',
+        updatedAt: '',
         remark: ''
       },
-      roles: ['校领导', '老师', '家长', '学生']
+      initString: '',
+      typeMap: {
+        normal: 'success',
+        unusable: 'info',
+        prohibite: 'danger'
+      },
+      formRules: {
+        email: [{validator: emailValidator, required: true, trigger: 'blur'}],
+        roleIds: [
+          { type: 'array', required: true, message: '请至少选择一个角色', trigger: 'change' }
+        ]
+      }
+    }
+  },
+  created () {
+    this.userId = this.$route.params.userId
+    this.getRoleList()
+    this.getUserDetail()
+  },
+  computed: {
+    ...mapGetters([
+      'roleList',
+      'statusMap'
+    ]),
+    createdAt () {
+      return dateFormat(this.form.createdAt, 'yyyy-MM-dd hh:mm:ss')
+    },
+    updatedAt () {
+      return dateFormat(this.form.updatedAt, 'yyyy-MM-dd hh:mm:ss')
+    }
+  },
+  methods: {
+    getRoleList () {
+      this.$store.dispatch('getRoleList', {})
+    },
+    getUserDetail () {
+      this.$store.dispatch('getUserDetail', {
+        id: this.userId
+      }).then(ret => {
+        this.form = ret
+        for (let i in this.form) {
+          this.initString += this.form[i]
+        }
+      })
+    },
+    saveEdit () {
+      let str = ''
+      for (let i in this.form) {
+        str += this.form[i]
+      }
+
+      if (str === this.initString) {
+        this.cancelAndBack()
+        return false
+      }
+
+      return new Promise((resolve, reject) => {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.form.id = this.userId
+            this.$store.dispatch('updateUser', this.form).then(() => {
+              this.cancelAndBack()
+            })
+          }
+        })
+      })
+    },
+    cancelAndBack () {
+      this.$router.push({path: '/userManage/index'})
     }
   }
 }

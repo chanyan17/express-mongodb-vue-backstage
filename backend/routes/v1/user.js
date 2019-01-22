@@ -16,6 +16,18 @@ router.use((req, res, next) => {
 })
 
 router.post('/create', (req, res, next) => {
+  if (!req.body.username || !req.body.mobile || !req.body.email) {
+    responseData.ok = 1
+    responseData.msg = '缺少用户名/手机/电子邮箱参数'
+    res.json(responseData)
+  }
+
+  if (!req.body.roleIds.length) {
+    responseData.ok = 1
+    responseData.msg = '缺少角色参数'
+    res.json(responseData)
+  }
+
   User.findByOpts({
     mobile: req.body.mobile
   }).then(rs => {
@@ -37,12 +49,11 @@ router.post('/create', (req, res, next) => {
               res.json(responseData)
             })
           }).catch(error => {
+            User.removeById(rs._id)
             if (error === '账号角色关系未选择') {
-              User.removeById(rs._id).then(rs => {
-                responseData.ok = 1
-                responseData.msg = '角色没有选择对应的权限，新建失败'
-                res.json(responseData)
-              })
+              responseData.ok = 1
+              responseData.msg = '角色没有选择对应的权限，新建失败'
+              res.json(responseData)
             } else {
               responseData.ok = 1
               responseData.msg = '新增用户保存失败'
@@ -75,8 +86,12 @@ router.get('/list', (req, res, next) => {
   let action
   if (req.query.keyword && req.query.keyword.length) {
     action = Promise.all([
-      User.findByOpts(req.query.keyword, pageSize, skipCount),
-      User.findByOpts(req.query.keyword)
+      User.findByOpts({
+        name: req.query.keyword
+      }, pageSize, skipCount),
+      User.findByOpts({
+        name: req.query.keyword
+      })
     ])
   } else {
     action = Promise.all([
@@ -97,6 +112,7 @@ router.get('/list', (req, res, next) => {
         username: obj['username'],
         mobile: obj['mobile'],
         sex: obj['sex'],
+        status: obj['status'],
         email: obj['email'],
         remark: obj['remark']
       })
@@ -116,29 +132,43 @@ router.get('/list', (req, res, next) => {
 })
 
 router.post('/detail', (req, res, next) => {
-  User.findById(req.body.id).then(rs => {
-    responseData.msg = '获取用户详情成功'
-    responseData.data = rs
-    responseData.data = {
-      username: rs['username'],
-      mobile: rs['mobile'],
-      email: rs['email'],
-      remark: rs['remark'],
-      createdBy: rs['createdBy'],
-      status: rs['status'],
-      createdAt: (new Date(rs['createdAt'])).getTime(),
-      updatedAt: (new Date(rs['updatedAt'])).getTime()
-    }
-    res.json(responseData)
-  }).catch(error => {
-    responseData.ok = 1
-    responseData.msg = '获取用户详情失败'
-    responseData.error = error
-    res.json(responseData)
+  let roleIds = []
+  UserRole.findAll(req.body.id).then(rs => {
+    rs.map(i => {
+      roleIds.push(i.roleId)
+    })
+    User.findById(req.body.id).then(rs => {
+      responseData.msg = '获取用户详情成功'
+      responseData.data = rs
+      responseData.data = {
+        username: rs['username'],
+        mobile: rs['mobile'],
+        email: rs['email'],
+        sex: rs['sex'],
+        remark: rs['remark'],
+        createdBy: rs['createdBy'],
+        status: rs['status'],
+        roleIds: roleIds,
+        createdAt: (new Date(rs['createdAt'])).getTime(),
+        updatedAt: (new Date(rs['updatedAt'])).getTime()
+      }
+      res.json(responseData)
+    }).catch(error => {
+      responseData.ok = 1
+      responseData.msg = '获取用户详情失败'
+      responseData.error = error
+      res.json(responseData)
+    })
   })
 })
 
 router.post('/unusable', (req, res, next) => {
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少用户id参数'
+    responseData.error = rs
+    res.json(responseData)
+  }
   User.findById(req.body.id).then(rs => {
     if (rs.status === 'normal') {
       User.updateById(req.body.id, {
@@ -166,6 +196,12 @@ router.post('/unusable', (req, res, next) => {
 })
 
 router.post('/prohibite', (req, res, next) => {
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少用户id参数'
+    responseData.error = rs
+    res.json(responseData)
+  }
   User.findById(req.body.id).then(rs => {
     if (rs.status !== 'prohibite') {
       User.updateById(req.body.id, {
@@ -193,6 +229,12 @@ router.post('/prohibite', (req, res, next) => {
 })
 
 router.post('/normal', (req, res, next) => {
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少用户id参数'
+    responseData.error = rs
+    res.json(responseData)
+  }
   User.findById(req.body.id).then(rs => {
     if (rs.status !== 'normal') {
       User.updateById(req.body.id, {
@@ -220,6 +262,12 @@ router.post('/normal', (req, res, next) => {
 })
 
 router.post('/resetPwd', (req, res, next) => {
+  if (!req.body.id) {
+    responseData.ok = 1
+    responseData.msg = '缺少用户id参数'
+    responseData.error = rs
+    res.json(responseData)
+  }
   User.findById(req.body.id).then(rs => {
     User.updateById(req.body.id, {
       password: '123456'

@@ -31,6 +31,11 @@ UserRoleShema.statics = {
       return Promise.reject('账号角色关系未选择')
     }
   },
+  findAll (userId) {
+    return this.find({
+      userId: userId
+    })
+  },
   removeByUserId (uid) {
     return this.deleteMany({
       userId: uid

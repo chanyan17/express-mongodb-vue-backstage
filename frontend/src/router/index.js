@@ -54,7 +54,7 @@ export const routes = [
         component: resolve => require(['@/views/userManage/create.vue'], resolve)
       },
       {
-        path: '/userManage/edit',
+        path: '/userManage/edit/:userId',
         name: 'userEdit',
         component: resolve => require(['@/views/userManage/edit.vue'], resolve)
       }
