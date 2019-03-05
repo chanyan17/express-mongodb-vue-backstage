@@ -14,8 +14,9 @@ import {
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: baseUrl || process.env.BASE_API, // api 的 base_url
-  timeout: serviceTimeout // 请求超时时间
+  baseURL: baseUrl, // api 的 base_url
+  timeout: serviceTimeout, // 请求超时时间
+  withCredentials: true // 跨域
 })
 
 // request拦截器

@@ -12,7 +12,7 @@ export default {
     }
   },
   created () {
-    console.log(this.$route)
+    // console.log(this.$route)
   },
   methods: {
     openLoading () {
@@ -37,6 +37,3 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped>
-
-</style>

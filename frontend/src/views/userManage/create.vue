@@ -21,7 +21,7 @@
           </el-form-item>
           <el-form-item label="角色" prop="roleIds">
             <el-checkbox-group v-model="form.roleIds">
-              <el-checkbox v-for="(role, idx) in roleList" v-bind:key="idx" :label="role.id" name="roleIds">{{role.name}}</el-checkbox>
+              <el-checkbox v-for="(role, id) in roleList" v-bind:key="id" :label="role.id" name="roleIds">{{role.name}}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="备注">

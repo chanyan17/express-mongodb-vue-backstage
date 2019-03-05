@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container :style="{'padding-left': isCollapseMenu ? '64px' : '172px'}">
     <el-aside :width="isCollapseMenu ? '64px' : '172px'">
       <head-logo></head-logo>
       <side-nav></side-nav>
@@ -34,11 +34,15 @@ export default {
 </script>
 <style>
 .el-container {
-  height: 100%;
+    display: block;
+    height: 100%;
+    padding-left: 172px;
 }
 
 .el-aside {
-  position: relative;
+  position: absolute;
+  left: 0;
+  top: 0;
   box-sizing: border-box;
   padding-top: 68px;
   height: 100%;

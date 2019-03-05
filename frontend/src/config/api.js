@@ -1,5 +1,8 @@
-// 请求的路径,若不设置则根据环境来配置(process.env.BASE_API)
-export const baseUrl = 'http://localhost:3000'
+// 使用模拟数据
+export const isSimulateData = true
+
+// 请求的路径(proxyTable已经进行代理，dev就不需要设置)
+export const baseUrl = process.env.NODE_ENV === 'production' ? process.env.BASE_API : ''
 
 // 超时时间设置
 export const serviceTimeout = 5000

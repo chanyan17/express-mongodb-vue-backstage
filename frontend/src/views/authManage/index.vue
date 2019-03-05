@@ -113,7 +113,6 @@ export default {
       this.$router.push({path: '/authManage/detail/' + authId})
     },
     editAuth (authId) {
-      console.log(authId)
       this.$router.push({path: '/authManage/edit/' + authId})
     },
     deleteAuth (authId) {

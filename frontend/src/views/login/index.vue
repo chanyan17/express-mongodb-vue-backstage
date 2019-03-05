@@ -58,8 +58,7 @@ export default {
   },
   methods: {
     login () {
-      this.$router.push({path: '/home/index'})
-      // this.$router.push({name: 'home', query: {id: 123}, params: {name: '123456'}})
+      this.$router.push({name: 'home', query: {id: 123}, params: {name: '123456'}})
     }
   }
 }

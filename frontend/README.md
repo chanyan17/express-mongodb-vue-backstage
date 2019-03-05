@@ -1,9 +1,8 @@
-# frontend
+# vue-backstage
 
-> 一个基于[vue](https://github.com/vuejs/vue) 和 [elementUI](https://github.com/ElemeFE/element)的管理后台，配合基于Nodejs的Express框架开发的后台，以MongoDB为数据库进行API开发。
+> 一个基于[vue](https://github.com/vuejs/vue) 和 [elementUI](https://github.com/ElemeFE/element)的管理后台。
 
 ## 依赖包
-
 #### 安装[elementUI](http://element-cn.eleme.io/#/zh-CN)
 ```bash
 npm install element-ui -S
@@ -63,3 +62,32 @@ npm i --save lodash
 npm i vue-i18n
 ```
 ## 路由搭建
+* 登录页 - /login
+* 主页 - /home
+* 个人中心 - /userCenter
+* 用户列表 - /userManage
+* 角色列表 - /roleManage
+* 权限列表 - /authManage
+
+## 数据模拟&API接入
+* 安装Mock.js
+```bash
+npm install mockjs --save-dev
+```
+* mock/*.js编写模拟数据
+* mock/index.js拦截请求，返回对应模拟数据
+
+## 前端跨域问题
+`config/index.js`中`proxyTable`添加代理配置
+```javascript
+proxyTable: {
+    '/v1': {
+        target: 'http://192.168.0.107:3000',
+        changeOrigin: true, // 允许跨域
+        pathRewrite:{
+            '^/v1':'/v1'
+        }
+    }
+}
+```
+配置后，axios就不需再设置baseURL了

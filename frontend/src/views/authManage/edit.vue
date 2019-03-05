@@ -74,7 +74,6 @@ export default {
   created () {
     this.getInitData()
     this.authId = this.$route.params.authId
-    console.log(this.authId)
     this.getDetail()
   },
   computed: {

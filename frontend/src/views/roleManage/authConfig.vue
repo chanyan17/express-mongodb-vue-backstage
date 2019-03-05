@@ -8,7 +8,7 @@
             <el-checkbox v-model="parentAuth.isChecked">{{parentAuth.name}}</el-checkbox>
             <div class="level-group" v-if="parentAuth.child.length">
                 <span v-for="item in parentAuth.child" v-bind:key="item.id">
-                  <el-checkbox v-model="item.isChecked">{{item.name}}{{item.isChecked}}</el-checkbox>
+                  <el-checkbox v-model="item.isChecked">{{item.name}}</el-checkbox>
                 </span>
             </div>
           </div>
@@ -40,6 +40,7 @@ export default {
   methods: {
     getAllAuth () {
       this.$store.dispatch('getAllAuth').then(data => {
+        console.log(data)
         if (data.length) {
           let parentAuths = []
           for (let i = 0; i < data.length; i++) {

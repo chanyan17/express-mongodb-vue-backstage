@@ -1,10 +1,11 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-
+import 'babel-polyfill'
 import VueI18n from 'vue-i18n'
 import LangEn from '@/lang/en'
 import LangCn from '@/lang/cn'
+import '@/mock/index'
 
 // 引入element-ui
 import elementUI from 'element-ui'
