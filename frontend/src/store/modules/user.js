@@ -1,8 +1,10 @@
-import { getUserList, createUser, getUserDetail, updateUser, prohibiteUser, unusableUser, normalUser, resetPwd } from '@/api/user'
+import { userLogin, getUserList, createUser, getUserDetail, updateUser, prohibiteUser, unusableUser, normalUser, resetPwd } from '@/api/user'
 import { isSimulateData } from '@/config/api'
+import { getToken, setToken, removeToken } from '@/utils/token'
 
 const user = {
   state: {
+    token: getToken(),
     userList: [],
     userTotalCount: 0
   },
@@ -10,9 +12,34 @@ const user = {
     SET_USER_LIST (state, result) {
       state.userList = result.rows
       state.userTotalCount = result.totalCount
+    },
+    SET_TOKEN (state, result) {
+      state.token = result.token
+      setToken(result.token)
+    },
+    REMOVE_TOKEN (state) {
+      state.token = ''
+      removeToken()
     }
   },
   actions: {
+    login ({commit}, params) {
+      return new Promise((resolve, reject) => {
+        userLogin(params).then(response => {
+          commit('SET_TOKEN', response)
+          resolve(response)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    logout ({commit}) {
+      return new Promise((resolve, reject) => {
+        let data = {ok: 0}
+        commit('REMOVE_TOKEN')
+        resolve(data)
+      })
+    },
     getUserList ({commit}, params) {
       return new Promise((resolve, reject) => {
         getUserList(params).then(response => {

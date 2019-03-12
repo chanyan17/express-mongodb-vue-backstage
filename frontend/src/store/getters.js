@@ -1,6 +1,10 @@
 const getters = {
+  token: state => state.user.token,
   isCollapseMenu: state => state.base.isCollapseMenu,
   language: state => state.base.language,
+  user: state => state.init.user,
+  asynRoutes: state => state.init.asynRoutes,
+  routes: state => state.init.routes,
   sexes: state => state.init.sexes,
   sexMap: state => state.init.sexMap,
   authTypes: state => state.init.authTypes,

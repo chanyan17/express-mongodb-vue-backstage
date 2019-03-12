@@ -7,11 +7,7 @@
 
 <script>
 export default {
-  name: 'App',
-  created () {
-    this.$store.dispatch('getInitData')
-    this.$store.dispatch('getParentAuth')
-  }
+  name: 'App'
 }
 </script>
 

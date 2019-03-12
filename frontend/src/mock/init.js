@@ -1,6 +1,13 @@
+import Mock from 'mockjs'
+const Random = Mock.Random
 // 初始化数据
 const initData = () => {
   return {
+    userInfo: {
+      name: Random.cname(),
+      id: Random.id()
+    },
+    routes: ['userManage', 'userCenter', 'roleManage', 'authManage'],
     authTypes: [
       {id: 'catalog', name: '目录', isUsed: false},
       {id: 'menu', name: '菜单', isUsed: true},

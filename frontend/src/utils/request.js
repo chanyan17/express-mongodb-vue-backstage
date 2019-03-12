@@ -1,6 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 import { Message } from 'element-ui'
+import { getToken } from '@/utils/token'
 import {
   baseUrl,
   serviceTimeout,
@@ -30,9 +32,9 @@ service.interceptors.request.use(
       })
     }
 
-    // if (getToken()) {
-    //   config.headers['X-Token'] = getToken()
-    // }
+    if (getToken()) {
+      config.headers['X-Token'] = getToken()
+    }
 
     return config
   },
@@ -50,7 +52,15 @@ service.interceptors.response.use(
     if (res[retStatusCodeKey] === successStatusCodeValue) {
       return res[retDataKey]
     } else if (res[retStatusCodeKey] === redirectStatusCodeValue) {
-      location.href = res[redirectURLKey]
+      let _Message = Message({
+        message: res[retMsgKey],
+        type: 'error',
+        duration: 2 * 1000
+      })
+      _Message.onClose = () => {
+        res[redirectURLKey] && (location.href = res[redirectURLKey])
+        router.push('/login')
+      }
     } else {
       Message({
         message: res[retMsgKey],
@@ -62,12 +72,21 @@ service.interceptors.response.use(
   },
   error => {
     store.commit('HIDE_LOADING')
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 2 * 1000
-    })
-    return Promise.reject(error)
+    let errorMsgMap = {
+      504: '服务器错误'
+    }
+    let _Message
+    if (!_Message) {
+      _Message = Message({
+        message: errorMsgMap[error.response.status],
+        type: 'error',
+        duration: 2 * 1000
+      })
+      _Message.onClose = () => {
+        router.push('/login')
+      }
+      return Promise.reject(error.response.data)
+    }
   }
 )
 export default service

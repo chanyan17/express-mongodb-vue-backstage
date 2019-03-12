@@ -10,17 +10,15 @@
         </div>
       </el-col>
       <el-col :span="12" class="actions">
-        <router-link to="/login">
-          <span class="logout" :title="$t('header.logout')">
-            <svg-icon  icon-class="logout"></svg-icon>
-          </span>
-        </router-link>
+        <span class="logout" :title="$t('header.logout')" @click="logout()">
+          <svg-icon  icon-class="logout"></svg-icon>
+        </span>
         <router-link to="/userCenter">
             <div class="user">
               <span class="portrait">
                   <img src="http://temp.im/30x30" alt="">
               </span>
-              <span class="username">admin</span>
+              <span class="username">{{ user.name }}</span>
             </div>
         </router-link>
         <div class="language" :title="$t('header.language')" @click="toggleLanguage()">
@@ -44,6 +42,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'user',
       'isCollapseMenu',
       'language'
     ]),
@@ -61,6 +60,11 @@ export default {
     toggleLanguage () {
       this.$store.commit('TOGGLE_LANGUAGE')
       this.$i18n.locale = this.language
+    },
+    logout () {
+      this.$store.dispatch('logout').then(() => {
+        this.$router.push({name: 'login'})
+      })
     }
   }
 }

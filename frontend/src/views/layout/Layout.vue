@@ -29,6 +29,9 @@ export default {
     ...mapGetters([
       'isCollapseMenu'
     ])
+  },
+  created () {
+    this.$store.dispatch('getParentAuth')
   }
 }
 </script>

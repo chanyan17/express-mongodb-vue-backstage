@@ -4,8 +4,8 @@
         <div class="logo">
           <img src="http://temp.im/142x142" alt="">
         </div>
-        <el-form ref="form" :model="form" size="large">
-          <el-form-item>
+        <el-form ref="form" :model="form" size="large" :rules="formRules">
+          <el-form-item prop="username">
               <el-input
                 placeholder="请输入账号/手机/邮箱"
                 v-model="form.username">
@@ -14,7 +14,7 @@
                 </template>
               </el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item prop="password">
               <el-input
                 placeholder="请输入登录密码"
                 v-model="form.password">
@@ -23,7 +23,7 @@
                 </template>
               </el-input>
           </el-form-item>
-          <el-form-item >
+          <el-form-item prop="code">
               <el-input
                 placeholder="请输入图形验证码"
                 v-model="form.code">
@@ -50,15 +50,46 @@ export default {
   data () {
     return {
       form: {
-        username: '',
-        password: '',
-        code: ''
+        username: 'admin',
+        password: '123456',
+        code: 'aaaaaa'
+      },
+      formRules: {
+        username: [{
+          required: true,
+          message: '请输入账号/手机号/邮箱',
+          trigger: 'blur'
+        }],
+        password: [{
+          required: true,
+          message: '请输入登录密码',
+          trigger: 'blur'
+        }],
+        code: [{
+          required: true,
+          message: '请输入图形验证码',
+          trigger: 'blur'
+        }]
       }
+    }
+  },
+  watch: {
+    $route: {
+      handler: function (route) {
+        this.redirect = route.query && route.query.redirect
+      },
+      immediate: true
     }
   },
   methods: {
     login () {
-      this.$router.push({name: 'home', query: {id: 123}, params: {name: '123456'}})
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          this.$store.dispatch('login', this.form).then(() => {
+            this.$router.push({ path: this.redirect || '/home' })
+          })
+        }
+      })
     }
   }
 }

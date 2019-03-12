@@ -1,7 +1,7 @@
 <template>
   <transition name="slide-fade">
-    <el-menu :default-active="$route.path" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapseMenu">
-      <router-link :to="router.link" v-for="(router, index) in routers" v-bind:key="index">
+    <el-menu :default-active="defaultActiveRoute" class="el-menu-vertical" @open="handleOpen" @close="handleClose" :collapse="isCollapseMenu">
+      <router-link :to="router.link" v-for="(router, index) in _routes" v-bind:key="index">
         <el-menu-item :index="router.link">
           <svg-icon  :icon-class="router.icon"></svg-icon>
           <span slot="title">{{ router.text }}</span>
@@ -35,29 +35,53 @@ export default {
   data () {
     return {
       isCollapse: false,
-      routers: [{
-        link: '/home/index',
-        icon: 'home',
-        text: '主页'
-      }, {
-        link: '/userManage/index',
-        icon: 'user-manage',
-        text: '用户管理'
-      }, {
-        link: '/roleManage/index',
-        icon: 'role-manage',
-        text: '角色管理'
-      }, {
-        link: '/authManage/index',
-        icon: 'auth-manage',
-        text: '权限管理'
-      }]
+      defaultActiveRoute: ''
+      // routers: [{
+      //   link: '/home/index',
+      //   icon: 'home',
+      //   text: '主页'
+      // }, {
+      //   link: '/userManage/index',
+      //   icon: 'user-manage',
+      //   text: '用户管理'
+      // }, {
+      //   link: '/roleManage/index',
+      //   icon: 'role-manage',
+      //   text: '角色管理'
+      // }, {
+      //   link: '/authManage/index',
+      //   icon: 'auth-manage',
+      //   text: '权限管理'
+      // }]
+    }
+  },
+  watch: {
+    $route: {
+      handler: function (route) {
+        this.defaultActiveRoute = route.matched[0].path
+        console.log(route)
+      },
+      immediate: true
     }
   },
   computed: {
     ...mapGetters([
+      'routes',
       'isCollapseMenu'
-    ])
+    ]),
+    _routes () {
+      let arr = []
+      this.routes.forEach(router => {
+        if (!router.hidden) {
+          arr.push({
+            text: router.meta.text,
+            icon: router.meta.icon,
+            link: router.path
+          })
+        }
+      })
+      return arr
+    }
   },
   methods: {
     handleOpen (key, keyPath) {

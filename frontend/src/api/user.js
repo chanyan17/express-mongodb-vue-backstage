@@ -1,4 +1,18 @@
 import request from '@/utils/request'
+export function userLogin (params) {
+  return request({
+    url: '/v1/user/login',
+    method: 'post',
+    data: params
+  })
+}
+export function userLogout (params) {
+  return request({
+    url: '/v1/user/login',
+    method: 'post'
+  })
+}
+
 export function getUserList (params) {
   return request({
     url: '/v1/user/list',

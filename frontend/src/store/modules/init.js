@@ -1,4 +1,7 @@
 import { getInitData } from '@/api/init'
+import router from '@/router'
+import asynRoutesMap from '@/router/asynRoutes'
+
 const init = {
   state: {
     sexes: [],
@@ -8,11 +11,21 @@ const init = {
     sexMap: {},
     authTypeMap: {},
     displayModeMap: {},
-    statusMap: {}
+    statusMap: {},
+    user: {},
+    asynRoutes: [],
+    routes: []
   },
   mutations: {
     SET_INIT_DATA (state, initData) {
-      const { sexes, authTypes, displayModes, status } = initData
+      const { userInfo, routes, sexes, authTypes, displayModes, status } = initData
+      state.user = userInfo
+      routes.forEach(item => {
+        state.asynRoutes.push(asynRoutesMap[item])
+      })
+
+      state.routes = router.options.routes.concat(state.asynRoutes)
+
       state.sexes = sexes
       state.authTypes = authTypes
       state.displayModes = displayModes

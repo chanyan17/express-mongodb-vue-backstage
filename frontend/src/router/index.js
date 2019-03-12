@@ -1,18 +1,22 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store'
 import Layout from '@/views/layout/Layout'
+import { getToken } from '@/utils/token'
 
 Vue.use(Router)
 
-export const routes = [
+const staticRoutes = [
   {
     path: '/',
-    // redirect: '/home/index'
-    redirect: '/login'
+    redirect: '/home/index',
+    hidden: true
   },
   {
     path: '/login',
-    component: resolve => require(['@/views/login/index.vue'], resolve)
+    name: 'login',
+    component: resolve => require(['@/views/login/index.vue'], resolve),
+    hidden: true
   },
   {
     path: '/home',
@@ -24,93 +28,80 @@ export const routes = [
         name: 'home',
         component: resolve => require(['@/views/home/index.vue'], resolve)
       }
-    ]
-  },
-  {
-    path: '/userCenter',
-    redirect: '/userCenter/index',
-    component: Layout,
-    children: [
-      {
-        path: '/userCenter/index',
-        component: resolve => require(['@/views/userCenter/index.vue'], resolve)
-      },
-      {
-        path: '/userCenter/pwd',
-        component: resolve => require(['@/views/userCenter/pwd.vue'], resolve)
-      }
-    ]
-  },
-  {
-    path: '/userManage',
-    redirect: '/userManage/index',
-    component: Layout,
-    children: [
-      {
-        path: '/userManage/index',
-        component: resolve => require(['@/views/userManage/index.vue'], resolve)
-      },
-      {
-        path: '/userManage/create',
-        component: resolve => require(['@/views/userManage/create.vue'], resolve)
-      },
-      {
-        path: '/userManage/edit/:userId',
-        name: 'userEdit',
-        component: resolve => require(['@/views/userManage/edit.vue'], resolve)
-      }
-    ]
-  },
-  {
-    path: '/roleManage',
-    redirect: '/roleManage/index',
-    component: Layout,
-    children: [
-      {
-        path: '/roleManage/index',
-        component: resolve => require(['@/views/roleManage/index.vue'], resolve)
-      },
-      {
-        path: '/roleManage/create',
-        component: resolve => require(['@/views/roleManage/create.vue'], resolve)
-      },
-      {
-        path: '/roleManage/edit/:roleId',
-        component: resolve => require(['@/views/roleManage/edit.vue'], resolve)
-      },
-      {
-        path: '/roleManage/authConfig/:roleId',
-        component: resolve => require(['@/views/roleManage/authConfig.vue'], resolve)
-      }
-    ]
-  },
-  {
-    path: '/authManage',
-    redirect: '/authManage/index',
-    component: Layout,
-    children: [
-      {
-        path: '/authManage/index',
-        component: resolve => require(['@/views/authManage/index.vue'], resolve)
-      },
-      {
-        path: '/authManage/create',
-        component: resolve => require(['@/views/authManage/create.vue'], resolve)
-      },
-      {
-        path: '/authManage/edit/:authId',
-        component: resolve => require(['@/views/authManage/edit.vue'], resolve)
-      },
-      {
-        path: '/authManage/detail/:authId',
-        component: resolve => require(['@/views/authManage/detail.vue'], resolve)
-      }
-    ]
+    ],
+    meta: {
+      icon: 'home',
+      text: '主页'
+    }
   }
 ]
 
 const router = new Router({
-  routes
+  routes: staticRoutes
 })
 
+const whiteList = ['/login']
+function hasPermission (to) {
+  let arr = []
+  store.getters.routes.forEach(item => {
+    item.name && (arr.push(item.name))
+    if (item.children) {
+      item.children.forEach(child => {
+        child.name && (arr.push(child.name))
+      })
+    }
+  })
+  return arr.some(item => item === to.name)
+}
+/*
+  - 是否存在token
+    - 是
+      - 路由指向登录页 next(`/home/index`)
+      - 是否已获取路由表
+        - 是
+          - 获取路由表
+            - 成功 next()
+            - 失败 next(`/login`)
+        - 否
+          - 判断路由是否在路由表(静态路由+动态路由)当中
+            - 是 next()
+            - 否 回到上一个有权限路由或者登录界面
+    - 否
+      - 是否为白名单
+        - 是 next()
+        - 否 next(`/login`)
+*/
+router.beforeEach((to, from, next) => {
+  let path = to.path
+  if (getToken()) {
+    if (path === '/Login') {
+      next(`/home`)
+      return
+    }
+    if (!store.getters.user.name) {
+      store.dispatch('getInitData').then(function () {
+        router.addRoutes(store.getters.asynRoutes)
+        next({...to, replace: true})
+      }).catch(() => {
+        // token过期
+        store.dispatch('logout').then(function () {
+          next(`/login`)
+        })
+      })
+    } else {
+      if (hasPermission(to)) {
+        next()
+      } else {
+        console.log(from)
+        if (from) {
+          next({path: from.path})
+        } else {
+          next(`/login`)
+        }
+      }
+    }
+  } else {
+    (whiteList.indexOf(to.path) !== -1) ? next() : next(`/login?redirect=${to.path}`)
+  }
+})
 export default router

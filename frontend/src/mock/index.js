@@ -13,6 +13,8 @@ function returnResult (data) {
 }
 
 if (isSimulateData) {
+  Mock.mock(RegExp(baseUrl + '/v1/user/login' + '.*'), 'post', returnResult(userAPI.userLogin()))
+  Mock.mock(RegExp(baseUrl + '/v1/user/logout'), 'post', returnResult(''))
   Mock.mock(RegExp(baseUrl + '/v1/init/data' + '.*'), 'get', returnResult(initAPI.getInitData()))
   Mock.mock(RegExp(baseUrl + '/v1/user/list' + '.*'), 'get', returnResult(userAPI.getUserList()))
   Mock.mock(RegExp(baseUrl + '/v1/user/detail' + '.*'), 'post', returnResult(userAPI.getUserDetail()))

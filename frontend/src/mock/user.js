@@ -2,6 +2,12 @@ import Mock from 'mockjs'
 
 const Random = Mock.Random
 
+const userLogin = function () {
+  return {
+    token: Mock.Random.guid()
+  }
+}
+
 // 用户列表
 const userList = function () {
   let data = {
@@ -53,6 +59,7 @@ const userDetail = function () {
 }
 
 export default {
+  userLogin: () => userLogin(),
   getUserList: () => userList(),
   getUserDetail: () => userDetail()
 }
